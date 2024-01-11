@@ -9,7 +9,7 @@ import (
 
 func getRandomPost() {
 	rs := api.RequestRandomPost{}
-	p, err := rs.Get("copypasta")
+	p, err := rs.Request("copypasta", "new", "discard")
 	if err != nil {
 		fmt.Println(err.Error())
 		return

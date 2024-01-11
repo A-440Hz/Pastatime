@@ -1,6 +1,9 @@
 package pastas
 
-import "pastatime/internal/api"
+import (
+	"pastatime/internal/api"
+	"strings"
+)
 
 // the Pastas object uses the go functional options pattern https://golang.cafe/blog/golang-functional-options-pattern.html
 // to allow configurable parameters when creating a new Pasta, i.e. func(language=voices.English)
@@ -32,6 +35,7 @@ type options struct {
 	withLanguageKey     string
 	withSubreddit       string
 	withRequestStrategy api.RequestStrategy
+	withSortOrder       string
 	withCensorStrategy  string
 }
 
@@ -40,6 +44,7 @@ func getDefaultOptions() options {
 		withLanguageKey:     "en",
 		withSubreddit:       "copypasta",
 		withRequestStrategy: &api.RequestRandomPost{},
+		withSortOrder:       "new",
 		withCensorStrategy:  "",
 	}
 }
@@ -58,7 +63,7 @@ func WithSubreddit(r string) Option {
 	}
 }
 
-// WithRequestStrategy specifies how posts are requested.
+// WithRequestStrategy specifies how posts are requested. See api package for current options.
 func WithRequestStrategy(r api.RequestStrategy) Option {
 	return func(o *options) {
 		o.withRequestStrategy = r
@@ -66,10 +71,27 @@ func WithRequestStrategy(r api.RequestStrategy) Option {
 }
 
 // WithCensorStrategy specifies censor strategies used when getting a post.
-//		default:			none
-//		"only-select-sfw":	only selects posts which do
+/*
+	default:		none
+	"discard":		only selects posts which do not contain any profanity
+	"censor":		replaces profanity in posts with exact amount of *** characters
+	"translate":	translates profanity to other languages
+*/
 func WithCensorStrategy(c string) Option {
 	return func(o *options) {
-		o.withCensorStrategy = c
+		o.withCensorStrategy = strings.ToLower(c)
+	}
+}
+
+// WithSortOrder specifies the sort order sent to the reddit API post listing request.
+/*
+	valid options:
+	"new"
+	"rising"
+	"hot"
+*/
+func WithSortOrder(s string) Option {
+	return func(o *options) {
+		o.withSortOrder = strings.ToLower(s)
 	}
 }

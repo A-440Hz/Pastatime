@@ -46,7 +46,9 @@ func NewPasta(...options) (*Pasta, error) {
 
 	// is this a bad design? too many opts?
 	// i think it's harder to understand the code this way for sure
-	p, err := opts.withRequestStrategy.Get(opts.withSubreddit)
+	// maybe im missing a struct that goes into the api package or doing certain things in the wrong places
+	// but i do need to know which posts to discard for sure, and i'd like to request listings efficiently if possible
+	p, err := opts.withRequestStrategy.Request(opts.withSubreddit, opts.withSortOrder, opts.withCensorStrategy)
 	if err != nil {
 		return nil, err
 	}
@@ -54,6 +56,7 @@ func NewPasta(...options) (*Pasta, error) {
 	return newPasta(title, body), nil
 }
 
+// TODO: why does this exist? I'm not sure I'll ever need this pattern here
 func newPasta(title string, body string) *Pasta {
 	return &Pasta{
 		title: title,
