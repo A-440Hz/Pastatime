@@ -37,11 +37,20 @@ type Pasta struct {
 	censorStrategy string
 }
 
+// TODO: do I need error checks here?
+func (p *Pasta) GetTitle() string {
+	return p.title
+}
+
+func (p *Pasta) GetBody() []string {
+	return p.body
+}
+
 // TODO: try using this https://github.com/TwiN/go-away/blob/master/goaway.go
 
 // NewPasta creates a new pasta object.
 // Maybe have options for "newest" or specify subreddit or others in the future
-func NewPasta(...options) (*Pasta, error) {
+func NewPasta(...Option) (*Pasta, error) {
 	opts := getDefaultOptions()
 
 	// is this a bad design? too many opts?
@@ -56,7 +65,7 @@ func NewPasta(...options) (*Pasta, error) {
 	return newPasta(title, body), nil
 }
 
-// TODO: why does this exist? I'm not sure I'll ever need this pattern here
+// this function exists so I can test without requesting a non-static live post
 func newPasta(title string, body string) *Pasta {
 	return &Pasta{
 		title: title,
@@ -123,6 +132,8 @@ func titleAndBody(p *reddit.Post, opt ...Option) (string, string) {
 // speak takes in a string and uses it to create and play an mp3 file.
 // opts.WithLanguageKey is used to specify a google translate language code to playback the string.
 func speak(str string, opt ...Option) error {
+	// TODO: I call getOptions twice when making a new pasta and calling speak.
+	// this is probably a fixable design redundancy. I probably have to store something in the new struct itself.
 	opts := getOpts(opt...)
 
 	// ideally I check here if opts.withLanguageKey is valid, but idk how without compiling a giant list

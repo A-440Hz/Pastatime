@@ -22,7 +22,7 @@ func TestNewPasta(t *testing.T) {
 	tests := []struct {
 		name    string
 		wantErr bool
-		options []options
+		options []Option
 	}{
 		// TODO: implement options testcases
 
@@ -134,15 +134,15 @@ func TestSlice(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			p := newPasta(tt.title, tt.body)
-			require.NotEmpty(t, p.body)
-			for _, ln := range p.body {
+			require.NotEmpty(t, p.GetTitle())
+			for _, ln := range p.GetBody() {
 				fmt.Println(ln)
 				assert.LessOrEqual(t, len(ln), strSplitLen)
 				if len(ln) < strSplitLen {
 					assert.Contains(t, punctuations, string(ln[len(ln)-1]))
 				}
 			}
-			assert.Equal(t, tt.title, p.title)
+			assert.Equal(t, tt.title, p.GetTitle())
 		})
 	}
 }
@@ -152,8 +152,8 @@ func TestSlice(t *testing.T) {
 func TestGetRandomPost(t *testing.T) {
 	p, err := NewPasta()
 	require.NoError(t, err)
-	fmt.Println(p.title)
-	for _, ln := range p.body {
+	fmt.Println(p.GetTitle())
+	for _, ln := range p.GetBody() {
 		fmt.Println(ln)
 		require.LessOrEqual(t, len(ln), strSplitLen)
 	}
