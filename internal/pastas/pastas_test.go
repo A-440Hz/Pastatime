@@ -139,7 +139,7 @@ func TestSlice(t *testing.T) {
 				fmt.Println(ln)
 				assert.LessOrEqual(t, len(ln), strSplitLen)
 				if len(ln) < strSplitLen {
-					assert.Contains(t, punctuations, string(ln[len(ln)-1]))
+					assert.Contains(t, punctuations, rune(ln[len(ln)-1]))
 				}
 			}
 			assert.Equal(t, tt.title, p.GetTitle())
@@ -158,5 +158,4 @@ func TestGetRandomPost(t *testing.T) {
 		require.LessOrEqual(t, len(ln), strSplitLen)
 	}
 	require.NoError(t, p.Speak())
-
 }

@@ -10,8 +10,6 @@ import (
 
 func getMostRecentPost(speak bool) {
 
-	// TODO: fix Options input
-
 	np, err := pastas.NewPasta([]pastas.Option{
 		pastas.WithSortOrder("new"),
 		pastas.WithRequestStrategy(api.RequestNewestPost{}),
@@ -20,7 +18,10 @@ func getMostRecentPost(speak bool) {
 		fmt.Println(err.Error())
 		return
 	}
-	fmt.Println("Newest r/copypasta post:\n", np.GetTitle(), "\n", np.GetBody())
+	fmt.Println("Newest r/copypasta post:\n", np.GetTitle())
+	for _, b := range np.GetBody() {
+		fmt.Println(fmt.Sprintf("%q|%d", b, len(b)))
+	}
 	if speak {
 		np.Speak()
 	}
@@ -43,7 +44,7 @@ func getRandomPostSFW(speak bool) {
 
 func main() {
 
-	getMostRecentPost(true)
+	getMostRecentPost(false)
 	// getRandomPostSFW()
 
 }

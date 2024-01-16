@@ -1,2 +1,7 @@
-#ignore files in any audio folders
+# ignore files in any audio folders
 audio/
+
+# ignore vscode settings
+.vscode/
+.vscode/launch.json
+.vscode/settings.json

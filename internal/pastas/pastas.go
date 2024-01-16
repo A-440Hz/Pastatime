@@ -8,14 +8,13 @@ import (
 	"strings"
 
 	tts "github.com/hegedustibor/htgo-tts"
-	"github.com/hegedustibor/htgo-tts/handlers"
 	"github.com/vartanbeno/go-reddit/v2/reddit"
 )
 
 // TODO: why is this by str len and not word count? is there some better metric?
 const strSplitLen = 195
 
-const punctuations = ".,?!:\n"
+var punctuations = []rune{'.', ',', ';', '?', '!', ':', '\r', '\n'}
 
 // TODO: this pattern creates a separate audio folder when running go tests. Maybe this is desirable?
 var audioFolder string
@@ -46,17 +45,11 @@ func (p *Pasta) GetBody() []string {
 	return p.body
 }
 
-// TODO: try using this https://github.com/TwiN/go-away/blob/master/goaway.go
-
 // NewPasta creates a new pasta object.
 // Maybe have options for "newest" or specify subreddit or others in the future
-func NewPasta(...Option) (*Pasta, error) {
-	opts := getDefaultOptions()
-
-	// is this a bad design? too many opts?
-	// i think it's harder to understand the code this way for sure
-	// maybe im missing a struct that goes into the api package or doing certain things in the wrong places
-	// but i do need to know which posts to discard for sure, and i'd like to request listings efficiently if possible
+func NewPasta(o ...Option) (*Pasta, error) {
+	opts := getOpts(o...)
+	// TODO: look into ways i might improve clarity/domain design of this structure
 	p, err := opts.withRequestStrategy.Request(opts.withSubreddit, opts.withSortOrder, opts.withCensorStrategy)
 	if err != nil {
 		return nil, err
@@ -65,7 +58,8 @@ func NewPasta(...Option) (*Pasta, error) {
 	return newPasta(title, body), nil
 }
 
-// this function exists so I can test without requesting a non-static live post
+// this function exists so I can test strings without requesting a non-static live post
+// TODO: why??? Shouldn't I just test sliceTo individually??
 func newPasta(title string, body string) *Pasta {
 	return &Pasta{
 		title: title,
@@ -74,34 +68,47 @@ func newPasta(title string, body string) *Pasta {
 }
 
 // sliceTo converts a string s into a slice of strings of at most size maxStrLen, preferring to split on punctuation.
+// trimming string len allows us to get consistent audio file responses (instead of error responses) querying the unofficial google translate API
 func sliceTo(s string) []string {
 	head, tail := 0, 0
 	sliced := make([]string, 0)
 	for i, cur := range s {
-
-		// we append a new slice when it is no longer possible to have a slice under size len
-		// there is an edge case of when head==tail but i don't know an elegant solution to write it
-		// i ended up just using >= to account for the extra character
-		// there is also an edge case of when i is len(s)
-
+		// we only increment the tail pointer when cur is a punctuation mark
+		// when the distance from i to head exceeds the strSplitLen:
+		//		we append s[head:tail] if possible and increment head
+		//		if head == tail, we just append s[head:i] and increment head
+		//		if i is the end of the string, we append s[head:i] and return sliced
 		if i-head >= strSplitLen && head != tail {
 			sliced = append(sliced, strings.Clone(s[head:tail]))
 			head = tail
 		} else if i-head >= strSplitLen && head == tail {
 			sliced = append(sliced, strings.Clone(s[head:i]))
 			head = i
-			tail = i
+			tail = less(i+1, len(s)-1)
 		} else if i == len(s)-1 {
 			sliced = append(sliced, strings.Clone(s[head:]))
+			return sliced
 		}
 
 		// we increment tail if the current rune is a punctuation mark
-		if strings.Contains(punctuations, string(cur)) {
-			tail = i + 1
+		for _, r := range punctuations {
+			if r == cur {
+				tail = less(i+1, len(s)-1)
+				continue
+			}
 		}
-
+		// if strings.Contains(punctuations, string(cur)) {
+		// 	tail = i + 1
+		// }
 	}
 	return sliced
+}
+
+func less(a, b int) int {
+	if a <= b {
+		return a
+	}
+	return b
 }
 
 // Speak calls the speak function on the title of a pasta and each line in the body.
@@ -151,12 +158,8 @@ func speak(str string, opt ...Option) error {
 	speech := tts.Speech{
 		Folder:   audioFolder,
 		Language: opts.withLanguageKey,
-		Handler:  &handlers.Native{},
+		Handler:  &MP3Interface{},
 	}
-
-	// TODO: implement my own speech package for miniscule speed improvements (no checking the folder if it exists every time,
-	// storage of audio files with the Pasta object??)
-	// I'm not sure
 
 	// speech.Speak checks if the file already exists in the audio folder, and requests it from google
 	// the request is this url:
