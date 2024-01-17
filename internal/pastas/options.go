@@ -37,6 +37,8 @@ type options struct {
 	withRequestStrategy api.RequestStrategy
 	withSortOrder       string
 	withCensorStrategy  string
+	withSampleRate      int
+	withSampleRateScale float32
 }
 
 func getDefaultOptions() options {
@@ -93,5 +95,19 @@ func WithCensorStrategy(c string) Option {
 func WithSortOrder(s string) Option {
 	return func(o *options) {
 		o.withSortOrder = strings.ToLower(s)
+	}
+}
+
+// WithSampleRate sets the mp3 handler sample rate. This always overides the scale option below.
+func WithSampleRate(r int) Option {
+	return func(o *options) {
+		o.withSampleRate = r
+	}
+}
+
+// WithSampleRateScale sets the mp3 handler sample rate scaling. This is always overriden by the set option above.
+func WithSampleRateScale(s float32) Option {
+	return func(o *options) {
+		o.withSampleRateScale = s
 	}
 }

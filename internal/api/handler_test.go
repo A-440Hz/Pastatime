@@ -16,6 +16,8 @@ import (
 // but for my current needs these tests are fine. Note that they (especially TestGetRandomSFWPost) may not pass 100% of the time for this reason.
 
 // TODO: also test the "maxWindowShift,... etc", parameters. Maybe in a refactored separate config file.
+// TODO: test all the options
+// reconsider how the options are passed through at New() and Speak()..
 
 func TestGetNewestPost(t *testing.T) {
 	rs := RequestNewestPost{}

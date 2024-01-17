@@ -6,6 +6,7 @@ package pastas
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"time"
 
@@ -13,10 +14,30 @@ import (
 	"github.com/hajimehoshi/oto/v2"
 )
 
-const defaultScaleFactor = 1.20
-
 type MP3Interface struct {
 	sampleRateScale float32
+	sampleRate      int
+}
+
+// TODO: is this the best pattern for this? I'm thinking for the UI, maybe setSampleRate should be accessed by
+// checking a bool first, so maybe I should make 3 struct methods to change the fields? (1 to enable overwrite sample rate, and the current 2)
+
+// m.sampleRate always overwrites m.sampleRateScale if m.sampleRate != 0
+func (m *MP3Interface) setSampleRate(r int) error {
+	// TODO: what do i limit this to?
+	if r < 0 {
+		return fmt.Errorf("%d is not a valid sample rate", r)
+	}
+	m.sampleRate = r
+	return nil
+}
+
+func (m *MP3Interface) setSampleRateScale(s float32) error {
+	if s > 3 || s < 0 {
+		return fmt.Errorf("%f is not a valid scale factor", s)
+	}
+	m.sampleRateScale = s
+	return nil
 }
 
 func (m *MP3Interface) Play(fileName string) error {
@@ -37,12 +58,14 @@ func (m *MP3Interface) Play(fileName string) error {
 	numOfChannels := 2
 	audioBitDepth := 2
 	sr := decodedMp3.SampleRate()
-
-	if m.sampleRateScale == 0 {
-		sr = int(float32(sr) * defaultScaleFactor)
-	} else {
+	// either overwrite or rescale the original sample rate, if specified
+	switch {
+	case m.sampleRate != 0:
+		sr = m.sampleRate
+	case m.sampleRateScale != 0:
 		sr = int(float32(sr) * m.sampleRateScale)
 	}
+
 	otoCtx, readyChan, err := oto.NewContext(sr, numOfChannels, audioBitDepth)
 	if err != nil {
 		return err

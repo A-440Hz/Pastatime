@@ -18,6 +18,7 @@ var punctuations = []rune{'.', ',', ';', '?', '!', ':', '\r', '\n'}
 
 // TODO: this pattern creates a separate audio folder when running go tests. Maybe this is desirable?
 var audioFolder string
+var audioHandler = &MP3Interface{}
 
 func init() {
 	cwd, err := os.Getwd()
@@ -155,16 +156,26 @@ func speak(str string, opt ...Option) error {
 	// cleanup after x files played...
 	// remember to use path/filepath & os.PathSeparator ('/' is fine for modern OS) for cross platform compatibility
 
+	// these values will be 0 by default
+	err := audioHandler.setSampleRate(opts.withSampleRate)
+	if err != nil {
+		return err
+	}
+	err = audioHandler.setSampleRateScale(opts.withSampleRateScale)
+	if err != nil {
+		return err
+	}
+
 	speech := tts.Speech{
 		Folder:   audioFolder,
 		Language: opts.withLanguageKey,
-		Handler:  &MP3Interface{},
+		Handler:  audioHandler,
 	}
 
 	// speech.Speak checks if the file already exists in the audio folder, and requests it from google
 	// the request is this url:
 	// fmt.Sprintf("http://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&textlen=32&client=tw-ob&q=%s&tl=%s", url.QueryEscape(text), speech.Language)
-	err := speech.Speak(str)
+	err = speech.Speak(str)
 	if err != nil {
 		// get the first 6 chars of the string for the error message
 		i := 6
