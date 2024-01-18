@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"pastatime/internal/api"
 	"pastatime/internal/pastas"
+	"sync"
 )
 
 // Here are some basic examples
@@ -35,6 +36,7 @@ func getMostRecentPost(speak bool) {
 
 func getRandomPostSFW(speak bool) {
 	np, err := pastas.NewPasta([]pastas.Option{
+		pastas.WithSortOrder("hot"),
 		pastas.WithCensorStrategy("discard"),
 		pastas.WithRequestStrategy(api.RequestRandomPost{}),
 	}...)
@@ -49,16 +51,22 @@ func getRandomPostSFW(speak bool) {
 }
 
 func getBatchSFW(n int, speak bool) {
+	var wg sync.WaitGroup
 	for i := n; i > 0; i-- {
-		getRandomPostSFW(speak)
-		fmt.Print("\n")
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			getRandomPostSFW(speak)
+			fmt.Print("\n")
+		}()
 	}
+	wg.Wait()
 }
 
 func main() {
 
 	// getMostRecentPost(true)
 	// getRandomPostSFW()
-	getBatchSFW(5, false)
+	getBatchSFW(10, false)
 
 }

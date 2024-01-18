@@ -85,10 +85,10 @@ func WithCensorStrategy(c string) Option {
 	}
 }
 
-// WithSortOrder specifies the sort order sent to the reddit API post listing request.
+// WithSortOrder specifies the sort order sent to the reddit API post listing request. Defaults to "new".
 /*
 	valid options:
-	"new"
+	"new" (default)
 	"rising"
 	"hot"
 */
