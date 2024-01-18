@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	tts "github.com/hegedustibor/htgo-tts"
-	"github.com/vartanbeno/go-reddit/v2/reddit"
 )
 
 // TODO: why is this by str len and not word count? is there some better metric?
@@ -55,7 +54,7 @@ func NewPasta(o ...Option) (*Pasta, error) {
 	if err != nil {
 		return nil, err
 	}
-	title, body := titleAndBody(p)
+	title, body := p.Title, p.Body
 	return newPasta(title, body), nil
 }
 
@@ -98,9 +97,6 @@ func sliceTo(s string) []string {
 				continue
 			}
 		}
-		// if strings.Contains(punctuations, string(cur)) {
-		// 	tail = i + 1
-		// }
 	}
 	return sliced
 }
@@ -129,11 +125,6 @@ func (p *Pasta) Speak(opt ...Option) error {
 	return nil
 }
 
-func titleAndBody(p *reddit.Post, opt ...Option) (string, string) {
-	// TODO: implement optional SFW filter and figure out storage location later
-	return p.Title, p.Body
-}
-
 // TODO: maybe have a paths or settings file with a list of constants
 // Configure a new TTS object and pass in however many strings
 
@@ -157,6 +148,7 @@ func speak(str string, opt ...Option) error {
 	// remember to use path/filepath & os.PathSeparator ('/' is fine for modern OS) for cross platform compatibility
 
 	// these values will be 0 by default
+	// TODO: these shouldnt be options. They should be settable from a config file which the front end modifies.
 	err := audioHandler.setSampleRate(opts.withSampleRate)
 	if err != nil {
 		return err

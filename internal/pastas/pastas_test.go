@@ -31,7 +31,7 @@ func TestNewPasta(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			p, err := NewPasta(tt.options...)
 			if tt.wantErr {
-				// TODO: implement err message checking
+				// I don't have any validation errors to trigger because I convert incorrect opts to default values
 				assert.Error(t, err)
 				return
 			}

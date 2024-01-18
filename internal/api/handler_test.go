@@ -64,7 +64,7 @@ func TestRequestRandomPost_SFW(t *testing.T) {
 		errContains     string
 	}{
 		{
-			name:            "default-startPoolSize",
+			name:            "default",
 			subreddit:       "copypasta",
 			RequestStrategy: RequestRandomPost{},
 		},
@@ -72,6 +72,7 @@ func TestRequestRandomPost_SFW(t *testing.T) {
 			name:            "SFW-subreddit",
 			subreddit:       "test",
 			RequestStrategy: RequestRandomPost{},
+			censorStrategy:  "discard",
 		},
 	}
 	for _, tt := range tests {
@@ -83,6 +84,9 @@ func TestRequestRandomPost_SFW(t *testing.T) {
 			}
 			assert.NoError(t, err)
 			assert.NotEmpty(t, p)
+			if tt.censorStrategy == "discard" {
+				assert.True(t, !goaway.IsProfane(p.Title) && !goaway.IsProfane(p.Body))
+			}
 			fmt.Println(p.Title, "\n", p.Body)
 
 		})
@@ -93,10 +97,11 @@ func TestRequestNewestPost_SFW(t *testing.T) {
 
 	rs := RequestNewestPost{}
 	p, err := rs.Request("copypasta", "new", "discard")
-
 	assert.NoError(t, err)
 	assert.NotEmpty(t, p.Body)
 	assert.NotEmpty(t, p.Title)
+	assert.False(t, goaway.IsProfane(p.Title))
+	assert.False(t, goaway.IsProfane(p.Body))
 	fmt.Println("\nrequested newest sfw post:\n", p.Title, "\n", p.Body)
 
 	p2, err := rs.Request("copypasta", "new", "")
@@ -104,18 +109,15 @@ func TestRequestNewestPost_SFW(t *testing.T) {
 	assert.NotEmpty(t, p2.Body)
 	assert.NotEmpty(t, p2.Title)
 	fmt.Println("\nrequested newest non-sfw post:\n", p2.Title, "\n", p2.Body)
-
-	// TODO: there's some sort of error here maybe involving max str length
-	// try search on Error: "Should not be: " in assert.NotEqual
 	assert.NotEqual(t, p.Body, p2.Body)
 
-	// request a post from a different subreddit
-	p3, err := rs.Request("lifehacks", "new", "")
+	// request a post from a different subreddit (with more consistent body text)
+	p3, err := rs.Request("amitheasshole", "new", "")
 	assert.NoError(t, err)
 	assert.NotEmpty(t, p3.Body)
 	assert.NotEmpty(t, p3.Title)
-	fmt.Println("\nrequested a post from r/test:\n", p3.Title, "\n", p3.Body)
+	fmt.Println("\nrequested a post from r/amitheasshole:\n", p3.Title, "\n", p3.Body)
 
-	// this testcase has a SLA of 99.9%
+	// this testcase has a SLA of 99.999%
 	assert.NotEqual(t, p2.Body, p3.Body)
 }
