@@ -48,9 +48,17 @@ func getRandomPostSFW(speak bool) {
 	}
 }
 
+func getBatchSFW(n int, speak bool) {
+	for i := n; i > 0; i-- {
+		getRandomPostSFW(speak)
+		fmt.Print("\n")
+	}
+}
+
 func main() {
 
-	getMostRecentPost(true)
+	// getMostRecentPost(true)
 	// getRandomPostSFW()
+	getBatchSFW(5, false)
 
 }
