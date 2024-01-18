@@ -91,7 +91,7 @@ func (r RequestNewestPost) getSFW(subreddit string, sortOrder string) (*reddit.P
 	for i := 0; i < maxPollAttempts; i++ {
 		k := i % requestWindowSize
 
-		// request new posts if needed
+		// increment posts window none in the current one are valid
 		if k == 0 && i > 0 {
 			posts, resp, err = reqFunction(ctx, subreddit,
 				&reddit.ListOptions{
@@ -106,7 +106,7 @@ func (r RequestNewestPost) getSFW(subreddit string, sortOrder string) (*reddit.P
 
 		// return valid post immediately
 		if !goaway.IsProfane(posts[k].Title) && !goaway.IsProfane(posts[k].Body) {
-			return posts[i], nil
+			return posts[k], nil
 		}
 
 	}
@@ -164,18 +164,18 @@ func (r RequestRandomPost) getSFW(subreddit string, sortOrder string) (*reddit.P
 	}
 
 	// fmt.Print("len posts: ", len(posts))
-	rs := rand.New(rand.NewSource(time.Now().UnixNano()))
-	ri := rs.Intn(requestWindowSize)
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
+	ri := rng.Intn(requestWindowSize)
 	p := posts[ri]
 
 	for w := 0; w < maxWindowShifts; w++ {
 		// fmt.Println("len posts: ", len(posts))
-		// Try maxPoolAttempts times to find and return a valid SFW post.
+		// For each window, try maxRandSamplesPerWindow times to find and return a valid SFW post.
 		for i := 0; i < maxRandSamplesPerWindow; i++ {
 			if !goaway.IsProfane(p.Title) && !goaway.IsProfane(p.Body) {
 				return p, nil
 			}
-			ri = rs.Intn(requestWindowSize)
+			ri = rng.Intn(requestWindowSize)
 			p = posts[ri]
 		}
 

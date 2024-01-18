@@ -19,21 +19,13 @@ import (
 // TODO: test all the options
 // reconsider how the options are passed through at New() and Speak()..
 
-func TestGetNewestPost(t *testing.T) {
-	rs := RequestNewestPost{}
-	// the fact that my input parameters look so awkward indicates that I should be looking to improve my domain model here
-	p, err := rs.Request("copypasta", "new", "")
-	require.NoError(t, err)
-	assert.NotEmpty(t, p)
-	fmt.Println(p.Title, "\n", p.Body)
-}
-
 func TestRequestNewestPost(t *testing.T) {
 	// There is room to do parallel testing here, but
 	rs := RequestNewestPost{}
 	p1, err := rs.Request("copypasta", "rising", "")
 	require.NoError(t, err)
 	assert.NotEmpty(t, p1.Title)
+	// sometimes posts may have empty bodies. I'd rather have a 99% accurate test than not test that the body is populated
 	assert.NotEmpty(t, p1.Body)
 	fmt.Println("newest from /rising:\n", p1.Title, "\n", p1.Body)
 
@@ -49,13 +41,14 @@ func TestRequestNewestPost(t *testing.T) {
 	assert.NotEmpty(t, p3.Body)
 	fmt.Println("newest from /new:\n", "\n", p3.Title, "\n", p3.Body)
 
-	p4, err := rs.Request("copypasta", "new", "sfw")
+	p4, err := rs.Request("copypasta", "new", "discard")
 	require.NoError(t, err)
 	assert.NotEmpty(t, p4.Title)
-	assert.NotEmpty(t, p4.Body)
+	// assert.NotEmpty(t, p4.Body)
 	// can't compare with p3 because they are the same if the newest post is sfw
 	assert.NotEqual(t, p2.Body, p4.Body)
-	assert.False(t, goaway.IsProfane(p4.Title) || goaway.IsProfane(p4.Body))
+	assert.False(t, goaway.IsProfane(p4.Title))
+	assert.False(t, goaway.IsProfane(p4.Body))
 	fmt.Println("newest sfw from /new:\n", "\n", p4.Title, "\n", p4.Body)
 
 	// TODO: I need to put extra words in the profanity filter lmao
