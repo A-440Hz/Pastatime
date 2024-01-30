@@ -8,16 +8,61 @@
     <title>Pastatime</title>
   </head>
   <body>
-    <h1 class="title"> Title </h1>
-    <div class="container">
-      <p> content </p>
-      <p> content </p>
-      <p> content </p>
-      <p> content </p>
-      <p> content </p>
-      <p> content </p>
-
+    <h1> Pastatime </h1>
+    <h4 class="taskbar"> Sticky taskbar goes here </h2>
+      <h5>LLM classification | REST API | DB persistence | Audio playback | Taskbar post request options | Minecraft parkour background | Config settings | Alarm feature | Streaming feature | LLM feature Gambling + Leaderboard | censorship via obfustication goes here </h6>
+      <div class="posts-container">
+      <div class="post">
+        <h3 class="post-title">
+          A message to hall residents
+        </h3>
+        <h4 class="post-body"> A message to hall residents 
+          Alright everyone, listen up. It turns out that nobody listens to me when I'm nice, so I guess I'll be mean.
+         Drawing pics of **clowns**, **skulls**, and **nerd faces** on peoples' whiteboards isn't cool. It's not funny, it's not friendly; it's annoying.
+         These three drawings in particular are NOT funny, they're RUDE. We as residents work hard to keep wads a safe place, and seeing people draw rude pics on peoples' boards makes me FURIOUS.
+         **STOP** drawing rude pics on peoples' whiteboards. It does NOT make you look cool, it does NOT make you look impressive, it makes you look very very STUPID.
+         FROM NOW ON, IF YOU ARE CAUGHT DRAWING MEAN PICS ON PEOPLE'S WHITEBOARDS, I'M WRITING YOUR NAME DOWN. THIS DOCUMENT WILL BE SENT TO PROPER AUTHORITIES AT THE END OF THE WEEK. THEY **WILL** HUNT YOU DOWN AND ARREST YOU.
+         This is your FINAL warning. Tread carefully...
+        </h4>
+        <button class="post-toggle">
+          <img src="/static/media/chevron.05a124d379047e16d746.svg"></img>
+        </button>
+      </div><div class="post">
+        <h3 class="post-title">
+          Loss
+        </h3>
+        <h4 class="post-body">
+          ⠀⠀⠀⣴⣴⡤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+          ⠀⣠⠀⢿⠇⡇⠀⠀⠀⠀⠀⠀⠀⢰⢷⡗
+          ⠀⢶⢽⠿⣗⠀⠀⠀⠀⠀⠀⠀⠀⣼⡧⠂⠀⠀⣼⣷⡆
+           ⠀⠀⣾⢶⠐⣱⠀⠀⠀⠀⠀⣤⣜⣻⣧⣲⣦⠤⣧⣿⠶
+          ⠀⢀⣿⣿⣇⠀⠀⠀⠀⠀⠀⠛⠿⣿⣿⣷⣤⣄⡹⣿⣷
+          ⠀⢸⣿⢸⣿⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⢿⣿⣿⣿⣿⣿
+           ⠀⠿⠃⠈⠿⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⠿⠿⠿
+          
+          ⠀⢀⢀⡀⠀⢀⣤⠀⠀⠀⠀⠀⠀⠀⡀⡀
+          ⠀⣿⡟⡇⠀⠭⡋⠅⠀⠀⠀⠀⠀⢰⣟⢿
+           ⠀⣹⡌⠀⠀⣨⣾⣷⣄⠀⠀⠀⠀⢈⠔⠌
+          ⠰⣷⣿⡀⢐⢿⣿⣿⢻⠀⠀⠀⢠⣿⡿⡤⣴⠄⢀⣀⡀
+          ⠘⣿⣿⠂⠈⢸⣿⣿⣸⠀⠀⠀⢘⣿⣿⣀⡠⣠⣺⣿⣷
+        </h4>
+        <button class="post-toggle">
+          <img src="/static/media/chevron.05a124d379047e16d746.svg"></img>
+        </button>
+      </div>
+    {{ range . }}
+    <div class="post"> 
+      <h3 class="post-title">
+        {{ .Title }}
+      </h3>
+      <h4 class="post-body">
+        {{ .Body }}
+      </h4>
+      <button class="post-toggle">
+        <img src="/static/media/chevron.05a124d379047e16d746.svg"></img>
+      </button>
     </div>
-    <script src="script.js"></script>
+    {{ end }}
+    <script src="/static/js/script.js"></script>
   </body>
 </html>

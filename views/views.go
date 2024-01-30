@@ -8,7 +8,7 @@ import (
 	"pastatime/internal/pastas"
 )
 
-var homeTemplate *template.Template
+var HomeTemplate *template.Template
 var pps []*pastas.Pasta
 
 func init() {
@@ -17,11 +17,11 @@ func init() {
 		fmt.Println("views.go init err: ", err)
 		os.Exit(1)
 	}
-	homeTemplate = templates.Lookup("index.html")
+	HomeTemplate = templates.Lookup("index.html")
 }
 
 func HomeFunc(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		homeTemplate.Execute(w, nil)
+		HomeTemplate.Execute(w, nil)
 	}
 }

@@ -30,19 +30,19 @@ func init() {
 }
 
 type Pasta struct {
-	title          string
-	body           []string
+	Title          string
+	Body           []string
 	body_sfw       []string
 	censorStrategy string
 }
 
 // TODO: do I need error checks here?
 func (p *Pasta) GetTitle() string {
-	return p.title
+	return p.Title
 }
 
 func (p *Pasta) GetBody() []string {
-	return p.body
+	return p.Body
 }
 
 // NewPasta creates a new pasta object.
@@ -62,8 +62,8 @@ func NewPasta(o ...Option) (*Pasta, error) {
 // TODO: why??? Shouldn't I just test sliceTo individually??
 func newPasta(title string, body string) *Pasta {
 	return &Pasta{
-		title: title,
-		body:  sliceTo(body),
+		Title: title,
+		Body:  sliceTo(body),
 	}
 }
 
@@ -110,11 +110,11 @@ func less(a, b int) int {
 
 // Speak calls the speak function on the title of a pasta and each line in the body.
 func (p *Pasta) Speak(opt ...Option) error {
-	err := speak(p.title, opt...)
+	err := speak(p.Title, opt...)
 	if err != nil {
 		return err
 	}
-	for _, b := range p.body {
+	for _, b := range p.Body {
 		err = speak(b, opt...)
 		// if there is an err we should keep trying the next line because it might just be a newline or certain input that is wrong.
 		// How do we test for errors in this case? Is there a problem with using a specific code at the end?
